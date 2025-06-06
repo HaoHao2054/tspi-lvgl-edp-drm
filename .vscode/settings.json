@@ -1,0 +1,33 @@
+{
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--header-insertion=never",
+         "--all-scopes-completion",
+        "--completion-style=detailed",
+        "--query-driver=/home/hao/tools/toolchains/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc",
+    ],
+
+    "VsCodeTaskButtons.showCounter": true,
+    "VsCodeTaskButtons.tasks": [
+        {
+            "label": "$(wrench) Configure",
+            "task": "CMake configure",
+            "tooltip": "Configure the project with CMake"
+        },
+        {
+            "label": "$(tools) Build",
+            "task": "Build",
+            "tooltip": "Build the project"
+        },
+        {
+            "label": "$(trash) Clean",
+            "task": "Clean",
+            "tooltip": "Build the project"
+        }
+    ],
+    "files.associations": {
+        "stdint.h": "c",
+        "ti_msp_dl_config.h": "c"
+    },
+    "idf.pythonInstallPath": "/usr/bin/python"
+}
