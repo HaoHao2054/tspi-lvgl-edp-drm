@@ -4,7 +4,6 @@
         "--header-insertion=never",
          "--all-scopes-completion",
         "--completion-style=detailed",
-        "--query-driver=/home/hao/tools/toolchains/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc",
     ],
 
     "VsCodeTaskButtons.showCounter": true,

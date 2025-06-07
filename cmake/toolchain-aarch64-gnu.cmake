@@ -5,10 +5,10 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # Cross compiler paths
-set(CROSS_COMPILER_PREFIX /home/hao/tools/toolchains/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-)
+# set(CROSS_COMPILER_PREFIX /home/hao/tools/toolchains/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-)
 
-set(CMAKE_C_COMPILER ${CROSS_COMPILER_PREFIX}gcc)
-set(CMAKE_CXX_COMPILER ${CROSS_COMPILER_PREFIX}g++)
+set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
+set(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -1,76 +1,82 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
+project(tspi_lvgl C CXX) # Enable C and CXX
 
-project(lvgl_demo C CXX)
+# --- Output Directory Configuration ---
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) # For older CMake compatibility
 
-# 定义宏，默认值为 1 是否使用 GUI Guider ，如果不使用，修改为OFF
-option(USE_GUI_GUIDER "Whether to include GUI Guider sources" OFF)
-
-# 生成 compile_commands.json
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# 启用 Ninja 颜色支持
-add_compile_options(-fdiagnostics-color=always)
+# --- Other Tools Configuration  ---
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)             # Enable compile command to ease indexing with e.g. clangd
+add_compile_options(-fdiagnostics-color=always)     # Ninja 
 
 # --- Toolchain Configuration ---
-include(${CMAKE_SOURCE_DIR}/toolchain-aarch64-gnu.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/toolchain-aarch64-gnu.cmake)
 
-# 添加lvgl.h的头文件路径
-include_directories(${CMAKE_SOURCE_DIR}/lvgl)
-include_directories(${CMAKE_SOURCE_DIR}/lvgl/src)
+# --- Compiler Flags (Project-Wide) ---
+add_compile_options(
+    -O3 -g0
+    # C Specific
+    $<$<COMPILE_LANGUAGE:C>:-std=c99>
+    # C++ Specific
+    # $<$<COMPILE_LANGUAGE:CXX>:-std=c++17> # 例如
+
+    # Common Warnings
+    -Wall -Wshadow -Wundef -Wmissing-prototypes -Wno-discarded-qualifiers -Wextra
+    -Wno-unused-function -Wno-error=strict-prototypes -Wpointer-arith -fno-strict-aliasing
+    -Wno-error=cpp -Wuninitialized -Wmaybe-uninitialized -Wno-unused-parameter
+    -Wno-missing-field-initializers -Wtype-limits -Wsizeof-pointer-memaccess
+    -Wno-format-nonliteral -Wno-cast-qual -Wunreachable-code -Wno-switch-default
+    -Wreturn-type -Wmultichar -Wformat-security -Wno-ignored-qualifiers
+    -Wno-error=pedantic -Wno-sign-compare -Wno-error=missing-prototypes
+    -Wdouble-promotion -Wclobbered -Wdeprecated -Wempty-body -Wtype-limits
+    -Wshift-negative-value -Wstack-usage=2048 -Wno-unused-value
+)
 
 
+# --- Include Subdirectories ---
+# Subdirectories will define their own libraries/executables and sources.
+add_subdirectory(lv_linux_port)
+add_subdirectory(gui_guider)
 
-# 设置编译选项
-set(CMAKE_C_FLAGS "-O3 -g0 -Wall -Wshadow -Wundef -Wmissing-prototypes -Wno-discarded-qualifiers \
-    -Wall -Wextra -Wno-unused-function -Wno-error=strict-prototypes -Wpointer-arith -fno-strict-aliasing \
-    -Wno-error=cpp -Wuninitialized -Wmaybe-uninitialized -Wno-unused-parameter -Wno-missing-field-initializers \
-    -Wtype-limits -Wsizeof-pointer-memaccess -Wno-format-nonliteral -Wno-cast-qual -Wunreachable-code \
-    -Wno-switch-default -Wreturn-type -Wmultichar -Wformat-security -Wno-ignored-qualifiers -Wno-error=pedantic \
-    -Wno-sign-compare -Wno-error=missing-prototypes -Wdouble-promotion -Wclobbered -Wdeprecated -Wempty-body \
-    -Wtype-limits -Wshift-negative-value -Wstack-usage=2048 -Wno-unused-value")
 
-# 设置链接选项
-set(CMAKE_EXE_LINKER_FLAGS "-lm")
+# --- Define the project executable ---
+add_executable(${PROJECT_NAME}
+    main.c
+)
 
-# 设置源代码目录
-set(LVGL_DIR ${CMAKE_SOURCE_DIR})
-include_directories(${LVGL_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC 
 
-# 生成源文件列表
-set(MAIN_SRC "main.c")
-set(LVGL_SRCS)
-set(LV_DRIVERS_SRCS)
+)
 
-# 递归查找 lvgl 和 lv_drivers 目录下的所有 C 文件
-file(GLOB_RECURSE LVGL_SRCS "${LVGL_DIR}/lvgl/*.c")
-file(GLOB_RECURSE LV_DRIVERS_SRCS "${LVGL_DIR}/lv_drivers/*.c")
+# Link against the libraries built in other directories
+target_link_directories(${PROJECT_NAME} PRIVATE
+    "${CMAKE_BINARY_DIR}/lib"  # Ensure the libraries are found in the build directory
+)
 
-# 注释掉编译鼠标输入的源码
-# list(REMOVE_ITEM LV_DRIVERS_SRCS "${LVGL_DIR}/mouse_cursor_icon.c")
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    lvgl
+)
 
-# 根据 USE_GUI_GUIDER 的值执行不同的逻辑
-if(USE_GUI_GUIDER)
-    message("Including GUI Guider sources")
-    include_directories(${CMAKE_SOURCE_DIR}/gui_guider/generated)
-    include_directories(${CMAKE_SOURCE_DIR}/gui_guider/custom)
-    file(GLOB_RECURSE GUI_GUIDER_SRCS
-        "${LVGL_DIR}/gui_guider/*.c"
-    )
-    # 合并所有源文件
-    set(SRCS ${MAIN_SRC} ${LVGL_SRCS} ${LV_DRIVERS_SRCS} ${GUI_GUIDER_SRCS})
-else()
-    message("Excluding GUI Guider sources")
-    set(SRCS ${MAIN_SRC} ${LVGL_SRCS} ${LV_DRIVERS_SRCS})
-endif()
+# # Install rules for the demo executable
+# install(TARGETS ${PROJECT_NAME}
+#     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
+# )
 
-# 生成目标可执行文件
-add_executable(${PROJECT_NAME} ${SRCS})
+message(STATUS "CMakeLists.txt: Defined ${PROJECT_NAME} executable.")
 
-# 指定链接库
-target_link_libraries(${PROJECT_NAME} m)
 
-# 指定编译目录
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# --- Install Rules for the main executable (defined in app/CMakeLists.txt) ---
+# The executable target 'demo' will be defined in app/CMakeLists.txt
+# We can set install rules here if we know the target name, or set it in app/CMakeLists.txt
+set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Installation prefix")
+# The actual install command for the 'demo' target should be in app/CMakeLists.txt
+# or ensure the 'demo' target is globally visible if installing from here.
 
-# 添加清理目标
-add_custom_target(custom_clean COMMAND ${CMAKE_COMMAND} --build . --target clean)
+# --- Print configuration (optional, can be useful for debugging) ---
+message(STATUS "Top-Level CMake: CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
+message(STATUS "Top-Level CMake: CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message(STATUS "Top-Level CMake: CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+message(STATUS "Top-Level CMake: CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "Top-Level CMake: Output directory for executables: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
