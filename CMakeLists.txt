@@ -13,32 +13,11 @@ add_compile_options(-fdiagnostics-color=always)     # Ninja
 
 # --- Toolchain Configuration ---
 include(${CMAKE_SOURCE_DIR}/cmake/toolchain-aarch64-gnu.cmake)
-
-# --- Compiler Flags (Project-Wide) ---
-add_compile_options(
-    -O3 -g0
-    # C Specific
-    $<$<COMPILE_LANGUAGE:C>:-std=c99>
-    # C++ Specific
-    # $<$<COMPILE_LANGUAGE:CXX>:-std=c++17> # 例如
-
-    # Common Warnings
-    -Wall -Wshadow -Wundef -Wmissing-prototypes -Wno-discarded-qualifiers -Wextra
-    -Wno-unused-function -Wno-error=strict-prototypes -Wpointer-arith -fno-strict-aliasing
-    -Wno-error=cpp -Wuninitialized -Wmaybe-uninitialized -Wno-unused-parameter
-    -Wno-missing-field-initializers -Wtype-limits -Wsizeof-pointer-memaccess
-    -Wno-format-nonliteral -Wno-cast-qual -Wunreachable-code -Wno-switch-default
-    -Wreturn-type -Wmultichar -Wformat-security -Wno-ignored-qualifiers
-    -Wno-error=pedantic -Wno-sign-compare -Wno-error=missing-prototypes
-    -Wdouble-promotion -Wclobbered -Wdeprecated -Wempty-body -Wtype-limits
-    -Wshift-negative-value -Wstack-usage=2048 -Wno-unused-value
-)
-
+include(${CMAKE_SOURCE_DIR}/cmake/find_library.cmake)
 
 # --- Include Subdirectories ---
-# Subdirectories will define their own libraries/executables and sources.
 add_subdirectory(lv_linux_port)
-add_subdirectory(gui_guider)
+# add_subdirectory(gui_guider)
 
 
 # --- Define the project executable ---
@@ -47,7 +26,7 @@ add_executable(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
-
+    "${CMAKE_SOURCE_DIR}/lv_linux_port/"  # Include directory for LVGL Linux port
 )
 
 # Link against the libraries built in other directories
@@ -57,6 +36,7 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     lvgl
+    drm
 )
 
 # # Install rules for the demo executable
@@ -70,7 +50,8 @@ message(STATUS "CMakeLists.txt: Defined ${PROJECT_NAME} executable.")
 # --- Install Rules for the main executable (defined in app/CMakeLists.txt) ---
 # The executable target 'demo' will be defined in app/CMakeLists.txt
 # We can set install rules here if we know the target name, or set it in app/CMakeLists.txt
-set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Installation prefix")
+# set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Installation prefix")
+
 # The actual install command for the 'demo' target should be in app/CMakeLists.txt
 # or ensure the 'demo' target is globally visible if installing from here.
 

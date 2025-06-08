@@ -1,18 +1,23 @@
-# gui_guider/CMakeLists.txt
-
-# 添加包含目录
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/generated)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/custom)
-
-# 递归查找所有 .c 文件
-file(GLOB_RECURSE GUI_GUIDER_SRCS
-    # "${CMAKE_CURRENT_SOURCE_DIR}/custom/*.c"
-    # "${CMAKE_CURRENT_SOURCE_DIR}/generated/*.c"
+# --- Librarys ---
+file(GLOB_RECURSE LVGL_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-# 将 GUI_GUIDER_SRCS 添加到父作用域的 SRCS 变量中
-set(SRCS ${SRCS} ${GUI_GUIDER_SRCS} PARENT_SCOPE)
+add_library(lvgl STATIC
+    ${LVGL_SOURCES}
+)
+
+target_include_directories(lvgl PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/lvgl"    
+    "${CMAKE_CURRENT_SOURCE_DIR}/lv_drivers" 
+
+)
+
+message(STATUS "lv_linux_port/CMakeLists.txt: Defined lvgl_core library.")
+
+
 
 # 根据 USE_GUI_GUIDER 的值执行不同的逻辑
 if(USE_GUI_GUIDER)

@@ -55,8 +55,7 @@ dkms.conf
 
 # 更新为cmake构建工程后，编译过程产物都在./build文件夹中
 build/*
-!build/.gitkeep
-!build/compile_commands.json
+
 
 # 添加GUI GUIDER生成的GUI文件，保留CMakelists.txt
 gui_guider/*
