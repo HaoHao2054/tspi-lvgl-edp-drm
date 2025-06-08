@@ -45,6 +45,28 @@
             },
             "problemMatcher": [],
             "detail": "Generated task for cleaning the build and cache directories"
-        }
+        },
+                {
+            "label": "SSH传输文件到开发板",
+            "type": "shell",
+            "command": "sshpass",
+            "args": [
+                "-p",
+                "tspi",
+                "scp",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-r",
+                "-v",
+                "${workspaceFolder}/build/bin/tspi_lvgl",
+                "tspi@192.168.31.152:/home/tspi/"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "通过SSH将构建文件传输到开发板"
+        },
     ]
 }

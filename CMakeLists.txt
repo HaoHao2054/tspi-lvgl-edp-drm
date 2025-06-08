@@ -13,7 +13,9 @@ add_compile_options(-fdiagnostics-color=always)     # Ninja
 
 # --- Toolchain Configuration ---
 include(${CMAKE_SOURCE_DIR}/cmake/toolchain-aarch64-gnu.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/find_library.cmake)
+
+# --- Third-Party Libraries Configuration ---
+# include(${CMAKE_SOURCE_DIR}/cmake/find_library.cmake)
 
 # --- Include Subdirectories ---
 add_subdirectory(lv_linux_port)
@@ -36,6 +38,7 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     lvgl
+    # libdrm
 )
 
 # # Install rules for the demo executable

@@ -2,10 +2,9 @@
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/build",
         "--header-insertion=never",
-         "--all-scopes-completion",
+        "--all-scopes-completion",
         "--completion-style=detailed",
     ],
-
     "VsCodeTaskButtons.showCounter": true,
     "VsCodeTaskButtons.tasks": [
         {
@@ -22,7 +21,12 @@
             "label": "$(trash) Clean",
             "task": "Clean",
             "tooltip": "Build the project"
-        }
+        },
+        {
+            "label": "$(play) Scp",
+            "task": "SSH传输文件到开发板",
+            "tooltip": "transfer files to the development board via SSH"
+        },
     ],
     "files.associations": {
         "stdint.h": "c",

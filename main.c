@@ -62,9 +62,9 @@ int main(void)
 
     /*Create a Demo*/
     //lv_demo_widgets();
-    lv_demo_benchmark();
+    //lv_demo_benchmark();
     //lv_demo_music();
-    //lv_demo_widgets();
+    lv_demo_widgets();
     //lv_demo_keypad_encoder();
 
     /*创建GUI GUIDER生成的UI*/
