@@ -36,7 +36,6 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     lvgl
-    drm
 )
 
 # # Install rules for the demo executable

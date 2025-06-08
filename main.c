@@ -1,62 +1,42 @@
 #include "lvgl/demos/benchmark/lv_demo_benchmark.h"
 #include "lvgl/lvgl.h"
 #include "lvgl/demos/lv_demos.h"
-#include "lv_drivers/display/drm.h"
+#include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
 #include <sys/time.h>
-#include <stdio.h>
-#include <stdlib.h>
 //#include "gui_guider/generated/gui_guider.h"
 //#include "gui_guider/generated/events_init.h"
 
-#define DISP_BUF_SIZE (240 * 320)
+#define DISP_BUF_SIZE (1366 * 786)
 
 /*定义GUI GUIDER创建的UI结构体*/
 //lv_ui guider_ui;
 
 int main(void)
 {
-    /* 定义屏参 */
-    lv_coord_t lcd_w, lcd_h;
-
-    uint32_t lcd_dpi;
-
     /*LittlevGL init*/
     lv_init();
 
     /*Linux frame buffer device init*/
-    // fbdev_init();
-    drm_init();
-    
-    drm_get_sizes(&lcd_w, &lcd_h, &lcd_dpi);
-    printf("LCD size: %dx%d, DPI: %d\n", lcd_w, lcd_h, lcd_dpi);
+    fbdev_init();
 
-    // /*A small buffer for LittlevGL to draw the screen's content*/
-    // static lv_color_t buf[DISP_BUF_SIZE];
-
-    /* 默认开启双缓冲 */
-    uint32_t draw_buf_size = lcd_w * lcd_h * sizeof(lv_color_t) / 4; /*1/4 screen sized buffer has the same performance */
-    static lv_disp_draw_buf_t disp_buf;
-    lv_color_t *buf_2_1 = malloc(draw_buf_size);
-    lv_color_t *buf_2_2 = malloc(draw_buf_size);
-    lv_disp_draw_buf_init(&disp_buf, buf_2_1, buf_2_2, draw_buf_size);
-
+    /*A small buffer for LittlevGL to draw the screen's content*/
+    static lv_color_t buf[DISP_BUF_SIZE];
 
     /*Initialize a descriptor for the buffer*/
-    // static lv_disp_draw_buf_t disp_buf;
-    // lv_disp_draw_buf_init(&disp_buf, buf, NULL, DISP_BUF_SIZE);
+    static lv_disp_draw_buf_t disp_buf;
+    lv_disp_draw_buf_init(&disp_buf, buf, NULL, DISP_BUF_SIZE);
 
     /*Initialize and register a display driver*/
     static lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
     disp_drv.draw_buf   = &disp_buf;
-    disp_drv.flush_cb   = drm_flush;
-    disp_drv.hor_res    = lcd_w;
-    disp_drv.ver_res    = lcd_h;
-    disp_drv.screen_transp = 1; /*Set to 1 if the screen has a transparent color (e.g. a color key)*/
+    disp_drv.flush_cb   = fbdev_flush;
+    disp_drv.hor_res    = 1366;
+    disp_drv.ver_res    = 786;
     /* 旋转屏幕 */
     // disp_drv.sw_rotate  = 1;
     // disp_drv.rotated    = LV_DISP_ROT_90;

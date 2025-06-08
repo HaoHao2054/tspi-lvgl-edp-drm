@@ -327,7 +327,7 @@
  *  FreeBSD frame buffer device (/dev/fbx)
  *.........................................*/
 #ifndef USE_BSD_FBDEV
-#  define USE_BSD_FBDEV		0
+#  define USE_BSD_FBDEV		1
 #endif
 
 #if USE_BSD_FBDEV
@@ -338,7 +338,7 @@
  *  DRM/KMS device (/dev/dri/cardX)
  *-----------------------------------------*/
 #ifndef USE_DRM
-#  define USE_DRM           1
+#  define USE_DRM           0
 #endif
 
 #if USE_DRM
