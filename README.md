@@ -1,29 +1,46 @@
-# LVGL for frame buffer device
+# 介绍
 
-LVGL configured to work with /dev/fb0 on Linux.
+适用于立创泰山派的LVGL工程，基于LVGL官方项目[lv_port_linux](https://github.com/lvgl/lv_port_linux.git)。目前有帧缓冲（fb）和drm（drm）两个分支。
 
-When cloning this repository, also make sure to download submodules (`git submodule update --init --recursive`) otherwise you will be missing key components.
+## 一、使用说明
 
-Check out this blog post for a step by step tutorial:
-https://blog.lvgl.io/2018-01-03/linux_fb
+### 1、更换编译器
 
-# 用于帧缓冲设备的 LVGL
-LVGL 已配置为在 Linux 上与 /dev/fb0 一起使用。
+编译器在`cmake/toolchain-aarch64-gnu.cmake`中进行设置，可以通过包管理器安装
 
-在克隆此存储库时，请确保同时下载子模块（git submodule update --init --recursive），否则您将缺少关键组件。
-
-请查看这篇博客文章，了解分步教程：
-https://blog.lvgl.io/2018-01-03/linux_fb
-
-## 编译指令
 ```bash
-#在./build中执行
-# 生成makefile
-cmake ..
-
-# 编译
-make
-
-#清理工程
-make custom_clean
+sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 ```
+
+或者使用自己本地的编译器，例如
+
+```bash
+# Cross compiler paths
+set(CROSS_COMPILER_PREFIX $ENV{HOME}/tools/toolchains/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-)
+
+set(CMAKE_C_COMPILER ${CROSS_COMPILER_PREFIX}gcc)
+set(CMAKE_CXX_COMPILER ${CROSS_COMPILER_PREFIX}g++)
+```
+
+### 2、使用drm设备时需要链接libdrm
+
+需要在你cmake的sysroot安装libdrm，使得可执行文件动态链接libdrm.so
+
+`cmake/toolchain-aarch64-gnu.cmake`
+
+```bash
+set(TSPI_SYSROOT "$ENV{HOME}/tspi_ubuntu_sysroot")
+set(CMAKE_SYSROOT ${TSPI_SYSROOT})
+```
+
+或者直接在开发板本地编译
+
+无论是本地编译还是交叉编译，开发板都需要安装libdrm
+
+```bash
+sudo apt install libdrm-dev
+```
+
+### 3、vscode快捷使用
+
+已经在`.vscode`中设置了快捷任务
